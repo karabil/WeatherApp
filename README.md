@@ -17,3 +17,5 @@ This is a simple weather app clone that demonstrates usage of latest android nat
 </p>
 
 ## Flow
+<img style="width: 50%;" src="https://user-images.githubusercontent.com/48866801/218085316-0491361d-f58a-40db-86e9-ef9d1a0a6bc1.gif" />
+
