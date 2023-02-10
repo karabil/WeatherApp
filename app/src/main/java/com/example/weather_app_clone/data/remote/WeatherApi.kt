@@ -1,6 +1,6 @@
 package com.example.weather_app_clone.data.remote
 
-import com.example.weather_app_clone.data.models.WeatherResponse
+import com.example.weather_app_clone.data.model.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

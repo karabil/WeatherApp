@@ -1,15 +1,14 @@
 package com.example.weather_app_clone.presentation
 
-import android.os.Bundle
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weather_app_clone.data.models.Main
-import com.example.weather_app_clone.data.models.WeatherResponse
-import com.example.weather_app_clone.domain.repository.MyRepository
+import com.example.weather_app_clone.data.model.Main
+import com.example.weather_app_clone.data.model.WeatherResponse
+import com.example.weather_app_clone.data.repository.MyRepositoryImpl
 import com.example.weather_app_clone.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,40 +16,42 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: dagger.Lazy<MyRepository>,
+    private val repository: dagger.Lazy<MyRepositoryImpl>,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel(
 ) {
-//    private val _responseState = MutableLiveData<WeatherResponse>()
-//    val responseState: LiveData<WeatherResponse> = _responseState
+    val responseFlow =
+        savedStateHandle.getStateFlow("response", WeatherResponse("", null))
+    val textFlow = savedStateHandle.getStateFlow("text", "")
+    val progressFlow = savedStateHandle.getStateFlow("progress", false)
+    val errorFlow = savedStateHandle.getStateFlow("error", "")
 
-//    private val _responseStateFlow = MutableStateFlow(WeatherResponse(0.toDouble(), ""))
-//    val responseStateFlow = _responseStateFlow.asStateFlow()
-
-    val flow = savedStateHandle.getStateFlow("response", (WeatherResponse("", Main(111.toDouble()))))
+    fun updateTextFlow(textToUpdate: String) {
+        savedStateHandle["text"] = textToUpdate
+        savedStateHandle["error"] = ""
+        savedStateHandle["response"] = WeatherResponse("", null)
+    }
 
     fun getTemperatureByCityName(city: String) {
         viewModelScope.launch {
+            savedStateHandle["progress"] = true
+            delay(2000)
             when (val result =
                 repository.get().getWeatherByCity(city, "5e3eeecf7156ae2fbee20b369e2584a0")) {
-                is Resource.Loading -> {
-
-                }
                 is Resource.Success -> {
                     //_responseStateFlow.value = result.data as WeatherResponse
                     val responseData = result.data as WeatherResponse
-                    savedStateHandle["response"] = WeatherResponse(city,Main(convertFtoC(responseData.main.temp)))
+                    val weatherResponse =
+                        WeatherResponse(city, responseData.main?.temp?.let { Main(it) })
+                    savedStateHandle["response"] = weatherResponse
+                    savedStateHandle["progress"] = false
                 }
                 is Resource.Error -> {
-
+                    savedStateHandle["progress"] = false
+                    savedStateHandle["error"] = result.message
                 }
                 else -> {}
             }
         }
-    }
-
-    private fun convertFtoC(degrees: Double) : Double{
-//        return (degrees - 32) * 5 / 9
-        return degrees
     }
 }

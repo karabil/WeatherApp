@@ -1,6 +1,6 @@
 package com.example.weather_app_clone.di
 
-import com.example.weather_app_clone.data.MyRepositoryImpl
+import com.example.weather_app_clone.data.repository.MyRepositoryImpl
 import com.example.weather_app_clone.domain.repository.MyRepository
 import dagger.Binds
 import dagger.Module
@@ -11,10 +11,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
     @Binds
     @Singleton
-    abstract fun bindMyRepository(
+    abstract fun bindRepository (
         myRepositoryImpl: MyRepositoryImpl
-    ) :MyRepository
+    ) : MyRepository
 }

@@ -1,7 +1,7 @@
-package com.example.weather_app_clone.data
+package com.example.weather_app_clone.data.repository
 
 import android.util.Log
-import com.example.weather_app_clone.data.models.WeatherResponse
+import com.example.weather_app_clone.data.model.WeatherResponse
 import com.example.weather_app_clone.data.remote.WeatherApi
 import com.example.weather_app_clone.domain.repository.MyRepository
 import com.example.weather_app_clone.util.Resource
@@ -19,14 +19,16 @@ class MyRepositoryImpl @Inject constructor(
 ) : MyRepository {
     override suspend fun getWeatherByCity(city: String, appId: String): Resource<WeatherResponse> {
         return withContext(Dispatchers.IO) {
+
             val response = try {
                 weatherApi.getWeatherByCity(city, appId, "metric")
+
             } catch (e: IOException) {
-                Log.e(TAG, e.message.toString())
-                return@withContext Resource.Error(e.message.toString())
+                Log.e(TAG, "IOException, ${e.message.toString()}")
+                return@withContext Resource.Error("Check your internet connection")
             } catch (e: HttpException) {
-                Log.e(TAG, e.message.toString())
-                return@withContext Resource.Error(e.message().toString())
+                Log.e(TAG, "HttpException, ${e.message.toString()}")
+                return@withContext Resource.Error("Unexpected response")
             }
             if (response.isSuccessful && response.body() != null) {
                 return@withContext Resource.Success(response.body()!!)
