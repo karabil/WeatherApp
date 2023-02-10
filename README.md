@@ -3,6 +3,7 @@ This is a simple weather app clone that demonstrates usage of latest android nat
 
 ## Technologies
 - OpenWeather RESTful API.
+- Retrofit.
 - FlowState in combination with SavedStateHandle to handle "Process Death" (in case the app moved to background and system decided to terminate the app due to free up system resources consumption).
 - Clean Architecture & MVVM architectural design patterns.
 - Material 3 & Jetpack Compose for the UI.
